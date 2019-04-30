@@ -1,0 +1,37 @@
+﻿INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DE PERNAMBUCO
+SERVIÇO PÚBLICO FEDERAL
+CAMPUS GARANHUNS
+
+
+Curso Técnico em Informática
+
+
+Modalidade: Integrado - Turma: 4º Ano - Turno: Manhã 
+Alunos: Kyllder Almeida da Rocha, Matheus de Melo Macêdo e Thiago Hortêncio Silva de Melo.
+
+
+Bomberman
+
+
+Funcionalidades:
+➔ O jogo fornecerá uma tela para criar uma sala ou entrar em uma já existente;
+➔ Mostrar aos jogadores o tempo que resta para o fim da partida;
+➔ Mostrar aos jogadores o vencedor da partida;
+➔ Fornecer ao jogador “power-ups” (melhorias para o personagem);
+➔ Fornecer uma boa variedade de mapas e personagens para os jogadores escolherem;
+➔ Entregar um modo multijogador onde dois ou mais jogadores poderão jogar a mesma partida de maneira simultânea.
+➔ Trazer mapas com blocos destrutíveis e blocos não destrutíveis;
+➔ Mostrar aos jogadores um contador com o número de vidas que os personagens possuem;
+➔ Mostrar aos jogadores o tempo que resta para o fim da partida;
+
+
+
+
+
+
+História:
+
+
+Ao iniciar o jogo, o usuário irá se deparar com um menu, onde ele poderá iniciar uma partida, ver os créditos do jogo ou sair do jogo. Ao entrar no jogo, o jogador deverá selecionar uma sala ou criá-la, e logo após, ele selecionará o mapa e o personagem que ele deseja utilizar.
+Durante a partida, os jogadores terão ao seu dispor um cenário parcialmente destrutivo, e nesse cenário estarão disponíveis melhorias para o personagem, como melhores que intensificam a potência das bombas, ou até mesmo melhorias que aumentem a velocidade do jogador. 
+Os jogadores irão se enfrentar por um determinado período de tempo, a partida terá fim quando restar apenas um jogador em campo, ou quando o não restar mais tempo, após isso, o sistema indicará quem venceu o jogo.
