@@ -229,9 +229,11 @@ class jogo extends Phaser.Scene {
                 this.mapa[(y-26)/52][(x-26)/52]=2;
                 var uma=this.bombas.create(x,y,'bomba').play('bombinha');
                 this.jogador1.quantidade--;
-                this.ativarAnimacao(uma);
-                setTimeout(function(){
-                    this.hitBomb(this.uma);
+                setTimeout(() => {
+                    uma.play('bombinha');
+                },1000);
+                setTimeout(() => {
+                    this.hitBomb(uma);
                         this.jogador1.quantidade++;
                 },2000);
             
@@ -245,8 +247,10 @@ class jogo extends Phaser.Scene {
                 this.mapa[(y-26)/52][(x-26)/52]=4;
                 var uma=this.bombas.create(x,y,'bomba').play('bombinha');
                 this.jogador2.quantidade--;
-                this.ativarAnimacao(uma);
-                setTimeout(function(){
+                setTimeout(() => {
+                    uma.play('bombinha');
+                },1000);
+                setTimeout(() => {
                     this.hitBomb(uma);
                     this.jogador2.quantidade++;
                 },2000);
@@ -274,7 +278,8 @@ class jogo extends Phaser.Scene {
             }else if(p>6){
                 animacao='GG';
             }
-            this.cancelarAnimacao();
+            
+            this.animB=false;
             
             var exs=new Array();
             exs.push(this.explosoes.create(x,y,'explosao').play('centro'+animacao));
@@ -326,7 +331,7 @@ class jogo extends Phaser.Scene {
                             
             }
                             
-            window.setTimeout(function(){
+            window.setTimeout(() => {
                 for(var i=0;i<exs.length;i++){
                     exs[i].destroy();
                 }
@@ -337,16 +342,6 @@ class jogo extends Phaser.Scene {
         }
     }
 
-    ativarAnimacao(uma){
-        this.anim=window.setInterval(function(){
-            uma.play('bombinha');
-        },1000);
-    }
-
-    cancelarAnimacao(){
-        this.anim=window.clearInterval();
-        this.animB=false;
-    }
 
     ativarDestruicao(c){
         if(this.mapa[(c.y-26)/52][(c.x-26)/52]==3){
