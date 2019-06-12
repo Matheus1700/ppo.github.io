@@ -12,7 +12,7 @@ preload(){
     this.load.image("start", "start.png");
 
     this.load.audio("botaoClick", "audio/correctSound.mp3");
-    this.load.audio("themeSong", "audio/FaketalesofSanFrancisco.mp3");
+    this.load.audio("themeSong", "audio/FaketalesofSanFrancisko.wav");
 } 
     
 create() {
