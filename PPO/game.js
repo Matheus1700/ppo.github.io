@@ -6,8 +6,7 @@ var config={
         default: "arcade",
         arcade: {debug:false}    
     }
-
-
+    
 }
 
 var game = new Phaser.Game(config)
