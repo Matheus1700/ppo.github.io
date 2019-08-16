@@ -3,7 +3,7 @@ class jogo extends Phaser.Scene {
     constructor() {
         super("jogo");
     this.cursor;this.player;this.player1;this.player2;this.blocos;this.e=0;this.explosoes;this.bombas;this.anim;
-    this.caixas;this.PUV;this.PUB;this.PUE;this.cursor2={w:0,a:0,s:0,d:0,b:0};this.pontos1=0;this.pontos2=0;
+    this.caixas;this.PUV;this.PUB;this.PUE;this.pause;this.cursor2={w:0,a:0,s:0,d:0,b:0};this.pontos1=0;this.pontos2=0;
     this.mapa = new Array(13);
     for(var i=0;i<13;i++){
         this.mapa[i]= new Array(19);
@@ -19,6 +19,9 @@ class jogo extends Phaser.Scene {
     
 
     preload(){
+
+        game.scene.pause()
+
         this.load.image('tela','img/tela.jpg');
         this.load.spritesheet('personagem','img/dude.png',{
             frameWidth:32, frameHeight:42
@@ -38,6 +41,13 @@ class jogo extends Phaser.Scene {
         this.load.image('PUBomba','img/PUBomba.png');
         this.load.image('P1W','img/Player1 Wins.png');
         this.load.image('P2W','img/Player2 Wins.png');
+
+        this.load.path = './fontes/';
+        this.load.image('gamma', 'font.png');
+        this.load.json('gamma_json', 'gamma.json');
+    
+
+
     }
 
     create(){
@@ -52,6 +62,13 @@ class jogo extends Phaser.Scene {
         this.PUV = this.physics.add.staticGroup();
         this.PUE = this.physics.add.staticGroup();
         this.PUB = this.physics.add.staticGroup();
+
+        let config = this.cache.json.get('gamma_json');
+
+        this.cache.bitmapFont.add('gamma', Phaser.GameObjects.RetroFont.Parse(this, config));
+
+
+
         for(var i=0,y=26;i<13;i++){
             this.mapa[(y-26)/52][0]=1;
             this.blocos.create(26,y,'bloco');
@@ -186,6 +203,8 @@ class jogo extends Phaser.Scene {
     }
 
     update(){
+
+
         if(this.cursor.right.isDown && this.jogador2.vivo){
             this.player2.setVelocityX(this.jogador2.velocidade);
             this.player2.anims.play('right',true);
@@ -256,6 +275,9 @@ class jogo extends Phaser.Scene {
                 },2000);
             }
         }   
+
+        
+
     }
 
     hitBomb(a){
@@ -402,6 +424,11 @@ class jogo extends Phaser.Scene {
 
     morte1(p,e){
         this.add.image(494,338,'P2W');
+
+        this.helloButton = this.add.bitmapText(388, 400, "gamma", 'START GAME')
+        .setInteractive().on('pointerdown', () => {window.location.reload();});
+
+
         p.disableBody(true,true);
         this.jogador1.vivo=false;
         for(;this.jogador1.potencia>1;this.jogador1.potencia--){
@@ -435,6 +462,10 @@ class jogo extends Phaser.Scene {
 
     morte2(p,e){
         this.add.image(494,338,'P1W');
+        
+        this.helloButton = this.add.bitmapText(388, 400, "gamma", 'START GAME')
+        .setInteractive().on('pointerdown', () => {window.location.reload();});
+
         p.disableBody(true,true);
         this.jogador2.vivo=false;
         for(;this.jogador2.potencia>1;this.jogador2.potencia--){
