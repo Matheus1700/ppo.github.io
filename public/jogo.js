@@ -1,3 +1,5 @@
+
+
 class jogo extends Phaser.Scene {
     
     constructor() {
@@ -67,6 +69,9 @@ class jogo extends Phaser.Scene {
     }
 
     create(){
+
+        var self = this;
+        this.socket = io();
         this.add.image(390,338,'tela');
         this.player = this.physics.add.group();
         this.player1 = this.player.create(78,78,'personagem');
@@ -100,6 +105,7 @@ class jogo extends Phaser.Scene {
             this.blocos.create(x,650,'bloco');
             x+=52;
         }
+        
         for(var i=0,y=130;i<5;i++){
             for(var j=0,x=130;j<8;j++){
                 this.mapa[(y-26)/52][(x-26)/52]=1;
