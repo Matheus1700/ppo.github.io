@@ -56,6 +56,11 @@ class jogo extends Phaser.Scene {
             self.addOutrosPlayers(self, playerInfo);
         });
 
+        this.socket.on('mapa', function (mapa) {
+            self.criandoMapa(self,mapa);
+        });
+
+
         //adicionando os controles
         this.cursor = this.input.keyboard.createCursorKeys();
         this.cursor.barra =  this.input.keyboard.addKey(32);
@@ -98,5 +103,17 @@ class jogo extends Phaser.Scene {
         outroPlayer.setTint(0xff0000);
         outroPlayer.playerId = playerInfo.playerId;
         self.outrosPlayers.add(outroPlayer);
+    }
+
+    criandoMapa(self,mapa){
+        for(var i=0;i<13;i++){
+            for(var j=0;j<19;j++){
+              if(mapa[i][j]==1){
+                self.blocos.create(j*52+26,i*52+26,'bloco');
+              }else if(mapa[i][j]==3 || mapa[i][j]==-2 || mapa[i][j]==-3 || mapa[i][j]==-4){
+                self.caixas.create(j*52+26,i*52+26,'caixa');
+              }
+            }
+          }
     }
 }

@@ -5,7 +5,7 @@ var io = require('socket.io').listen(server);
 
 var players = {};
 players.length=0
-var mapa= {};
+var mapa;
 
 
 app.use(express.static(__dirname + '/public'));
@@ -18,7 +18,11 @@ io.on('connection', function (socket) {
     //adicionando player
     addPlayer(socket);
     console.log('a user connected ' + players.length);
-
+    if(mapa==undefined){
+      criandoMapa();
+    }
+    //passando mapa
+    socket.emit('mapa', mapa);
     // passando todos os players
     socket.emit('passandoPlayers', players);
     // passando novo player
@@ -43,50 +47,63 @@ io.on('connection', function (socket) {
 function criandoMapa(){
 
   //Criando a matriz 
-  this.mapa = new Array(13);
+  mapa = new Array(13);
   for(var i=0;i<13;i++){
-    this.mapa[i]= new Array(19);
+    mapa[i]= new Array(19);
     for(var j=0;j<19;j++){
-    this.mapa[i][j]=0;
+      mapa[i][j]=0;
     }
   }
 
   //adicionando as bordas laterais do mapa 
   for(var i=0;i<13;i++){
-    this.mapa[i][0]=1;
-    this.mapa[i][18]=1;
+    mapa[i][0]=1;
+    mapa[i][18]=1;
   }
 
   //adicionando as bordas do topo e de baixo do mapa 
-  for(var i=0;i<17;i++){
-    this.mapa[0][i]=1;
-    this.mapa[12][i]=1;
+  for(var i=0;i<18;i++){
+    mapa[0][i]=1;
+    mapa[12][i]=1;
   }
 
   //adicionando as pedras no meio do mapa
-  for(var i=0;i<5;i++){
-    for(var j=0;j<8;j++){
-      this.mapa[i][j]=1;
+  for(var i=2;i<13;i+=2){
+    for(var j=2;j<19;j+=2){
+      mapa[i][j]=1;
     }
   }
 
   //criando as caixas e definindo os PowerUps nelas
   for(var i=1;i<12;i++){
     for(var j=1;j<18;j++){
-      if( this.mapa[i][j]==0 && parseInt(Math.random()*10)>1){
+      if( mapa[i][j]==0 && parseInt(Math.random()*10)>1){
         let random=parseInt(Math.random()*7);
         if(random==0){
-          this.mapa[i][j]=-2;
+          mapa[i][j]=-2;
         }else if(random==1){
-          this.mapa[i][j]=-3;
+          mapa[i][j]=-3;
         }else if(random==2){
-          this.mapa[i][j]=-4;
+          mapa[i][j]=-4;
         }else{
-          this.mapa[i][j]=3;          
+          mapa[i][j]=3;          
         }
       }
     }
   }
+
+  mapa[1][1]=-1; 
+  mapa[1][2]=-1; 
+  mapa[1][16]=-1; 
+  mapa[1][17]=-1; 
+  mapa[2][1]=-1; 
+  mapa[2][17]=-1;
+  mapa[11][1]=-1; 
+  mapa[11][2]=-1; 
+  mapa[11][16]=-1; 
+  mapa[11][17]=-1; 
+  mapa[10][1]=-1;
+  mapa[10][17]=-1;
 }
 
 function addPlayer(socket){
