@@ -15,19 +15,35 @@ app.get('/', function (req, res) {
 });
 
 io.on('connection', function (socket) {
+    //adicionando player
     addPlayer(socket);
     console.log('a user connected ' + players.length);
+
+    // passando todos os players
+    socket.emit('passandoPlayers', players);
+    // passando novo player
+    socket.broadcast.emit('novoPlayer', players[socket.id]);
+    // player movimentando
+    socket.on('playerMovimentando', movementData => {
+      players[socket.id].x = movementData.x;
+      players[socket.id].y = movementData.y;
+      players[socket.id].direcao = movementData.direcao;
+
+      // emit a message to all players about the player that moved
+      socket.broadcast.emit('playerMovimentou', players[socket.id]);
+    });
 
     socket.on('disconnect',() => {
       console.log('user disconnected');
       delete players[socket.id];
+      players.length-=1;
   });
 });
 
 function criandoMapa(){
 
   //Criando a matriz 
-  mapa = new Array(13);
+  this.mapa = new Array(13);
   for(var i=0;i<13;i++){
     this.mapa[i]= new Array(19);
     for(var j=0;j<19;j++){
@@ -77,36 +93,48 @@ function addPlayer(socket){
   //adicionando as posiçoes de cada player a medida que conectam
   if(players.length==0){
     criandoMapa();
-    players.length=1;
+    players.length+=1;
     players[socket.id]={
+      playerId: socket.id,
       x: 78,
       y: 78,
+      direcao: 'parado',
       potencia: 1,
-      num:1
+      num:1,
+      vivo: true
     }
   }else if(players.length==1){
-    players.length=2;
-    players[socket.d]={
+    players.length+=1;
+    players[socket.id]={
+      playerId: socket.id,
       x: 910,
       y: 598,
+      direcao: 'parado',
       potencia: 1,
-      num:2
+      num:2,
+      vivo: true
     }
   }else if(players.length==2){
-    players.length=3;
-    players[socket.d]={
+    players.length+=1;
+    players[socket.id]={
+      playerId: socket.id,
       x: 78,
       y: 598,
+      direcao: 'parado',
       potencia: 1,
-      num:2
+      num:2,
+      vivo: true
     }
   }else if(players.length==3){
-    players.length=4;
-    players[socket.d]={
+    players.length+=1;
+    players[socket.id]={
+      playerId: socket.id,
       x: 910,
       y: 78,
+      direcao: 'parado',
       potencia: 1,
-      num:2
+      num:2,
+      vivo: true
     }
   }else{
     alert("ja tem todos os players")
