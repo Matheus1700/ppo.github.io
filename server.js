@@ -31,17 +31,17 @@ io.on('connection', function (socket) {
     socket.on('playerMovimentando', movementData => {
       players[socket.id].x = movementData.x;
       players[socket.id].y = movementData.y;
-      players[socket.id].direcao = movementData.direcao;
 
-      // emit a message to all players about the player that moved
+      // avisa quando se moverem
       socket.broadcast.emit('playerMovimentou', players[socket.id]);
     });
 
     socket.on('disconnect',() => {
       console.log('user disconnected');
+      socket.broadcast.emit('desconectado', socket.id);
       delete players[socket.id];
       players.length-=1;
-  });
+    });
 });
 
 function criandoMapa(){
