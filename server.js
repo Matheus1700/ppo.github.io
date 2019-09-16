@@ -31,15 +31,41 @@ io.on('connection', function (socket) {
     socket.on('playerMovimentando', movementData => {
       players[socket.id].x = movementData.x;
       players[socket.id].y = movementData.y;
+      players[socket.id].direcao = movementData.direcao;
 
       // avisa quando se moverem
       socket.broadcast.emit('playerMovimentou', players[socket.id]);
+    });
+    //Verificar e criando bomba
+    socket.on('verificarBomba',playerInfo => {
+      if(players[playerInfo.Id].quantidade>0){
+        players[playerInfo.Id].quantidade-=1;
+        playerInfo.potencia = players[playerInfo.Id].potencia;
+        io.emit('criarBomba',playerInfo);
+      }
+    });
+
+    socket.on('destruidoBomba',() => {
+        players[socket.id].quantidade+=1;
+    });
+
+    socket.on('powerUpPego', tipo =>{
+      if(tipo=="BOMBA"){
+        players[socket.id].quantidade+=1;
+      }
+      if(tipo=="POTENCIA"){
+        players[socket.id].potencia+=1;
+      }
+    });
+
+    socket.on('playerEliminado',() => {
+      socket.broadcast.emit('desconectado', socket.id);
     });
 
     socket.on('disconnect',() => {
       console.log('user disconnected');
       socket.broadcast.emit('desconectado', socket.id);
-      delete players[socket.id];
+      players[socket.id];
       players.length-=1;
     });
 });
@@ -115,9 +141,9 @@ function addPlayer(socket){
       playerId: socket.id,
       x: 78,
       y: 78,
-      direcao: 'parado',
+      direcao: 'turn',
       potencia: 1,
-      num:1,
+      quantidade:1,
       vivo: true
     }
   }else if(players.length==1){
@@ -126,9 +152,9 @@ function addPlayer(socket){
       playerId: socket.id,
       x: 910,
       y: 598,
-      direcao: 'parado',
+      direcao: 'turn',
       potencia: 1,
-      num:2,
+      quantidade: 1,
       vivo: true
     }
   }else if(players.length==2){
@@ -137,9 +163,9 @@ function addPlayer(socket){
       playerId: socket.id,
       x: 78,
       y: 598,
-      direcao: 'parado',
+      direcao: 'turn',
       potencia: 1,
-      num:2,
+      quantidade: 1,
       vivo: true
     }
   }else if(players.length==3){
@@ -148,9 +174,9 @@ function addPlayer(socket){
       playerId: socket.id,
       x: 910,
       y: 78,
-      direcao: 'parado',
+      direcao: 'turn',
       potencia: 1,
-      num:2,
+      quantidade: 1,
       vivo: true
     }
   }else{
