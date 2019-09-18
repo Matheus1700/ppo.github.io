@@ -39,7 +39,7 @@ create() {
     this.add.image(490, 338, "fundo");
 
     this.botaoStart = this.add.bitmapText(388, 400, "gamma", 'START GAME')
-    .setInteractive().on('pointerdown', () => { this.scene.start("jogo")
+    .setInteractive().on('pointerdown', () => { this.scene.start("telaCriarPartida")
     soundSample.play(); soundTrack.stop(); });
 
     this.botaoStart.setFontSize(22);
