@@ -7,7 +7,9 @@ constructor(){
 
 preload(){
 
-    this.load.image("fundo", "telaInicial.png");
+    this.load.image("fundo", "img/telaCriarSala.jpg");
+    this.load.image("botao", "img/botao.jpg");
+    this.load.image("logo", "img/logoRefeitaLaranja.png");
 
     this.load.audio("botaoClick", "audio/correctSound.mp3");
     this.load.audio("themeSong", "audio/FaketalesofSanFrancisko.wav");
@@ -38,11 +40,19 @@ create() {
 
     this.add.image(490, 338, "fundo");
 
-    this.botaoStart = this.add.bitmapText(388, 400, "gamma", 'START GAME')
-    .setInteractive().on('pointerdown', () => { this.scene.start("telaCriarPartida")
-    soundSample.play(); soundTrack.stop(); });
+    let logo = this.add.image(470, 180, "logo");
+    logo.setScale(0.55);
 
-    this.botaoStart.setFontSize(22);
+    this.texto1 = this.add.bitmapText(135, 320, "gamma", 'NOME');
+    this.texto1.setScale(1.3);
+
+    this.texto2 = this.add.bitmapText(135, 394, "gamma", 'SENHA');
+    this.texto2.setScale(1.3);
+
+    let botaoIniciar = this.add.image(475, 537, "botao").
+    setInteractive().on('pointerdown', () => { this.scene.start("menuPrincipal")});;
+
+  
 
 }
 
