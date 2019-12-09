@@ -24,9 +24,6 @@ class entrarPartida extends Phaser.Scene{
         setInteractive().on('pointerdown', () => { this.scene.start("menuPrincipal")});;
         seta.setScale(0.1);
 
-        let logo = this.add.image(470, 180, "logo");
-        logo.setScale(0.55);
-
         this.texto1 = this.add.bitmapText(225, 100, "gamma", 'SALA');
         this.texto1.setScale(1.7);
 
