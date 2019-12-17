@@ -29,7 +29,8 @@ create() {
         loop: true
     }
 
-    //Aqui ta criando o elemento INPUT no JS usando a tag 'input1', que já tinha sido criado no telaInicialHtml
+    //Aqui ta criando o elemento INPUT no JS usando a tag 'input1'
+    // que já tinha sido criado no telaInicialHtml
     var inputUm = document.createElement("input1");
     var inputDois = document.createElement("input2");
     
