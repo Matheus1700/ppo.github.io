@@ -9,6 +9,7 @@ class menuPrincipal extends Phaser.Scene{
     }
     preload(){
         this.load.image("fundo2", "img/telaNormal.jpg");
+        this.load.image("fundo3", "img/telaSimples.jpg");
 
         this.load.image("botaoCriar1", "img/botaoCriar.png");
         this.load.image("botaoEstatistica1", "img/botaoEstatistica.png");
@@ -18,7 +19,6 @@ class menuPrincipal extends Phaser.Scene{
         this.load.path = './fontes/';
         this.load.image('gamma', 'font.png');
         this.load.json('gamma_json', 'gamma.json');
-
     }
 
     create(){

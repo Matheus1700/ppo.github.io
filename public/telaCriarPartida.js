@@ -23,5 +23,7 @@ class telaCriarPartida extends Phaser.Scene{
         this.texto = this.add.bitmapText(600, 110, "gamma", 'VER ESTATÍSTICAS');
 
         this.texto.setFontSize(17);
+
+        
     }
 }

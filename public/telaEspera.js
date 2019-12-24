@@ -11,6 +11,8 @@ class telaEspera extends Phaser.Scene{
         this.load.image("fundoEspera", "img/telaEspera.jpg");
         this.load.image("botaoIniciar", "img/botao.jpg");
         this.load.image("seta", "img/seta.png");
+        this.load.image("playerEspera", "img/botaoPlayer.png");
+
 
         this.load.path = './fontes/';
         this.load.image('gamma', 'font.png');
@@ -27,8 +29,14 @@ class telaEspera extends Phaser.Scene{
         setInteractive().on('pointerdown', () => { this.scene.start("menuPrincipal")});;
         seta.setScale(0.1);
 
+        let divPlayer = this.add.image(390, 300, "playerEspera");
+        divPlayer.setScale(0.5);
+
         let botaoIniciar = this.add.image(475, 565, "botaoIniciar").setScale(0.9).
         setInteractive().on('pointerdown', () => { this.scene.start("jogo",{socket: this.socket, sala: "teste"})});
+
+            
+        
 
       
     }

@@ -18,6 +18,9 @@ class criarPartida extends Phaser.Scene{
         this.load.image('gamma', 'font.png');
         this.load.json('gamma_json', 'gamma.json');
 
+        
+
+
     }
 
 
@@ -65,6 +68,12 @@ class criarPartida extends Phaser.Scene{
         this.texto2 = this.add.bitmapText(135, 394, "gamma", 'SENHA');
         this.texto2.setScale(1.3);
 
+            
+
+        
+
+        
+        
       
     }
 

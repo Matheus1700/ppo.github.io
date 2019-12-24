@@ -47,7 +47,7 @@ class entrarPartida extends Phaser.Scene{
             this.socket.emit("Entrar Sala",{nome: "teste", senha:"1234"});
         });
 
-      
+    
     }
 
 }    

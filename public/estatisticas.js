@@ -30,6 +30,7 @@ class estatisticas extends Phaser.Scene{
         this.texto2 = this.add.bitmapText(560, 100, "gamma", 'PONTOS');
         this.texto2.setScale(1.7);
 
+
     }
 
 }    

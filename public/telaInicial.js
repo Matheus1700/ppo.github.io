@@ -30,12 +30,10 @@ create() {
         loop: true
     }
 
-    //Aqui ta criando o elemento INPUT no JS usando a tag 'input1'
-    // que já tinha sido criado no telaInicialHtml
-    var inputUm = document.createElement("input");
-    inputUm.setAttribute('id', 'input1');
-    var inputDois = document.createElement("input");
-    inputDois.setAttribute('id', 'input2');
+    //Tornando um dos inputs invisível
+    var input1 = document.getElementById("input1")
+    .style.display = "none";
+    //Adicionando trilha sonora
     let soundSample = this.sound.add("botaoClick")
     let soundTrack = this.sound.add("themeSong")
     let config = this.cache.json.get('gamma_json');
@@ -47,26 +45,22 @@ create() {
     
     this.add.image(490, 338, "fundo");
     
-    let logo = this.add.image(470, 180, "logo");
-    logo.setScale(0.55);
+    let logo = this.add.image(470, 190, "logo");
+    logo.setScale(0.6);
     
+    /*
     this.texto1 = this.add.bitmapText(135, 320, "gamma", 'NOME');
     this.texto1.setScale(1.3);
+    */
 
-    this.texto2 = this.add.bitmapText(135, 394, "gamma", 'SENHA');
+    this.texto2 = this.add.bitmapText(147, 394, "gamma", 'NOME');
     this.texto2.setScale(1.3);
 
-    
+
     let botaoIniciar = this.add.image(475, 537, "botao").
-    setInteractive().on('pointerdown', () => {
-        var nome= document.getElementById('input1').value;
-        var senha=document.getElementById('input2').value;
-        console.log(nome," ",senha);
-        this.socket.emit('Nome jogador',nome)
-        document.getElementById("input1").style.display = "none";
-        document.getElementById("input2").style.display = "none"  ;
-        this.scene.start("menuPrincipal",{socket: this.socket, nome: nome}) 
-    });;
+    setInteractive().on('pointerdown', () => { this.scene.start("menuPrincipal",
+    document.getElementById("input2").style.display = "none"
+    )});;
     
     
     
