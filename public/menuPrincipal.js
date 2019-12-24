@@ -3,7 +3,10 @@ class menuPrincipal extends Phaser.Scene{
     constructor(){
         super("menuPrincipal");
     }
-
+    init(data){
+        this.socket=data.socket;
+        console.log(this.socket.id);
+    }
     preload(){
         this.load.image("fundo2", "img/telaNormal.jpg");
 
@@ -23,13 +26,13 @@ class menuPrincipal extends Phaser.Scene{
         x.setScale(0.6);
 
         let botaoCriar = this.add.image(664.5, 270, "botaoCriar1").setScale(0.55).
-        setInteractive().on('pointerdown', () => { this.scene.start("criarPartida")});
+        setInteractive().on('pointerdown', () => { this.scene.start("criarPartida",{socket: this.socket})});
 
         let botaoEstatistica = this.add.image(664.5, 410, "botaoEstatistica1").setScale(0.55)
         .setInteractive().on('pointerdown', () => { this.scene.start("estatisticas")});
 
         let botaoIniciar = this.add.image(664.5, 605, "botaoIniciar1").setScale(0.55)
-        .setInteractive().on('pointerdown', () => { this.scene.start("entrarPartida")});
+        .setInteractive().on('pointerdown', () => { this.scene.start("entrarPartida",{socket: this.socket})});
 
         let botaoFechar = this.add.image(664.5, 555, "botaoFechar1").setScale(0.55)
         .setInteractive().on('pointerdown', () => { this.scene.start("criarPartida")});

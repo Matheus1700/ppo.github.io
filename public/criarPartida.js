@@ -3,7 +3,10 @@ class criarPartida extends Phaser.Scene{
     constructor(){ 
         super("criarPartida");
     }
-
+    init(data){
+        this.socket=data.socket;
+        console.log(this.socket.id);
+    }
     preload(){
         this.load.image("fundoCriar", "img/telaCriarSala.jpg");
         this.load.image("botaoConfirmar", "img/botaoConfirmar.jpg");
@@ -19,18 +22,42 @@ class criarPartida extends Phaser.Scene{
 
 
     create(){
-
+        var inputUm = document.createElement("input");
+        inputUm.setAttribute('id', 'input1');
+        var inputDois = document.createElement("input");
+        inputDois.setAttribute('id', 'input2');
         this.add.image(490, 338, "fundoCriar");
-    
+
         let logo = this.add.image(470, 180, "logo");
         logo.setScale(0.55);    
 
+        
+        this.socket.on('Aprovado',()=>{
+            console.log("foi aprovado")
+            this.socket.emit('Criar sala',{nome: "teste", senha: '1234'});
+            document.getElementById("input1").style.display = "none";
+            document.getElementById("input2").style.display = "none";
+            this.scene.start("telaEspera",{socket: this.socket});
+        });
+        this.socket.on('Reprovado',()=>{
+            alert("Nome ja utilizado");
+        });
+        
+
         let seta = this.add.image(30, 40, "seta").
-        setInteractive().on('pointerdown', () => { this.scene.start("menuPrincipal")});;
+
+        setInteractive().on('pointerdown', () => {
+            document.getElementById("input1").style.display = "none";
+            document.getElementById("input2").style.display = "none";
+            this.scene.start("menuPrincipal",{socket: this.socket})
+            
+        });
         seta.setScale(0.1);
 
         let botaoConfirmar = this.add.image(475, 537, "botaoConfirmar").
-        setInteractive().on('pointerdown', () => { this.scene.start("telaEspera")});;
+        setInteractive().on('pointerdown', () => {
+            this.socket.emit("Verificar nome",{nome: "teste"})
+        });
 
         this.texto1 = this.add.bitmapText(135, 320, "gamma", 'NOME');
         this.texto1.setScale(1.3);

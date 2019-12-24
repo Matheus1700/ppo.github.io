@@ -5,7 +5,10 @@ class jogo extends Phaser.Scene {
     constructor() {
         super("jogo");
     }
-    
+    init(data){
+        this.socket=data.socket;
+        this.sala=data.sala;
+    }
 
     preload(){
         game.scene.pause()
@@ -38,9 +41,8 @@ class jogo extends Phaser.Scene {
     }
 
     create(){
-
+        this.socket.emit("entrou");
         var self = this;
-        this.socket = io();
         this.outrosPlayers = this.physics.add.group();
         this.players = this.physics.add.group();
         this.vivo=true;
@@ -57,9 +59,12 @@ class jogo extends Phaser.Scene {
 
         //escutando os players
         this.socket.on('passandoPlayers', players => {
+            console.log("passando os players")
             Object.keys(players).forEach(function (id) {
+            console.log(players[id])
               if (players[id].playerId === self.socket.id) {
                 self.addPlayer(self,players[id]);
+                console.log("erro nao encontrado")
               } else {
                 self.addOutrosPlayers(self, players[id]);
               }
@@ -195,7 +200,7 @@ class jogo extends Phaser.Scene {
             var y = this.player.y;
             var d = this.player.direcao; 
             if (this.player.oldPosition && (x !== this.player.oldPosition.x || y !== this.player.oldPosition.y || d!=this.player.oldPosition.direcao || d!='turn')) {
-                this.socket.emit('playerMovimentando', { x: this.player.x, y: this.player.y, direcao: this.player.direcao});
+                this.socket.emit('playerMovimentando', { x: this.player.x, y: this.player.y, direcao: this.player.direcao, sala:this.sala});
             }
 
             // save old position data

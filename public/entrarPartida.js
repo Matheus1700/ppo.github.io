@@ -3,6 +3,9 @@ class entrarPartida extends Phaser.Scene{
     constructor(){ 
         super("entrarPartida");
     }
+    init(data){
+        this.socket=data.socket;
+    }
 
     preload(){
         this.load.image("fundoEntrar", "img/telaEntrarSala.jpg");
@@ -17,7 +20,13 @@ class entrarPartida extends Phaser.Scene{
     }
 
     create(){
-
+        
+        this.socket.on("Senha errada",()=>{
+            alert("Senha incorreta");
+        });
+        this.socket.on("Senha certa",()=>{
+            this.scene.start("telaEspera",{socket: this.socket});
+        });
         this.add.image(490, 338, "fundoEntrar");
 
         let seta = this.add.image(30, 40, "seta").
@@ -34,7 +43,9 @@ class entrarPartida extends Phaser.Scene{
         this.texto3.setScale(1.7);
 
         let botaoEntrar = this.add.image(475, 523, "botaoEntrar").
-        setInteractive().on('pointerdown', () => { this.scene.start("telaEspera")});
+        setInteractive().on('pointerdown', () => { 
+            this.socket.emit("Entrar Sala",{nome: "teste", senha:"1234"});
+        });
 
       
     }
