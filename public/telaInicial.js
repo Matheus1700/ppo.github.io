@@ -7,7 +7,7 @@ constructor(){
 
 preload(){
 
-    this.load.image("fundo", "img/telaCriarSala.jpg");
+    this.load.image("fundo", "img/telaInicial.jpg");
     
     this.load.image("botao", "img/botao.jpg");
     this.load.image("logo", "img/logoRefeitaLaranja.png");
@@ -30,8 +30,14 @@ create() {
         loop: true
     }
 
+    //Aqui ta criando o elemento INPUT no JS usando a tag 'input1'
+    // que já tinha sido criado no telaInicialHtml
+    var inputUm = document.createElement("input");
+    inputUm.setAttribute('id', 'input1');
+    var inputDois = document.createElement("input");
+    inputDois.setAttribute('id', 'input2');
     //Tornando um dos inputs invisível
-    var input1 = document.getElementById("input1")
+     inputUm = document.getElementById("input1")
     .style.display = "none";
     //Adicionando trilha sonora
     let soundSample = this.sound.add("botaoClick")
@@ -57,10 +63,18 @@ create() {
     this.texto2.setScale(1.3);
 
 
-    let botaoIniciar = this.add.image(475, 537, "botao").
-    setInteractive().on('pointerdown', () => { this.scene.start("menuPrincipal",
-    document.getElementById("input2").style.display = "none"
-    )});;
+    let botaoIniciar = this.add.image(475, 537, "botao").setInteractive().on('pointerdown', () => {
+        var nome= document.getElementById('input1').value;
+        var senha= document.getElementById('input2').value;
+        console.log(nome," ",senha);
+        this.socket.emit('Nome jogador',nome)
+        document.getElementById("input1").style.display = "none";
+        document.getElementById("input2").style.display = "none";
+        this.scene.start("menuPrincipal",{socket: this.socket, nome: nome}) 
+    });;
+
+    //
+    
     
     
     

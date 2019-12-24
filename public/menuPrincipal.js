@@ -9,7 +9,7 @@ class menuPrincipal extends Phaser.Scene{
     }
     preload(){
         this.load.image("fundo2", "img/telaNormal.jpg");
-        this.load.image("fundo3", "img/telaSimples.jpg");
+        //this.load.image("fundo3", "img/telaSimples.jpg");
 
         this.load.image("botaoCriar1", "img/botaoCriar.png");
         this.load.image("botaoEstatistica1", "img/botaoEstatistica.png");
@@ -23,19 +23,27 @@ class menuPrincipal extends Phaser.Scene{
 
     create(){
         var x = this.add.image(490, 338, "fundo2");
-        x.setScale(0.6);
+        x.setScale(0.75);
 
         let botaoCriar = this.add.image(664.5, 270, "botaoCriar1").setScale(0.55).
-        setInteractive().on('pointerdown', () => { this.scene.start("criarPartida",{socket: this.socket})});
+        setInteractive().on('pointerdown', () => { this.scene.start("criarPartida",{socket: this.socket},
+        document.getElementById("input1").style.display = "inline",
+        document.getElementById("input2").style.display = "inline"
+        )});
 
         let botaoEstatistica = this.add.image(664.5, 410, "botaoEstatistica1").setScale(0.55)
         .setInteractive().on('pointerdown', () => { this.scene.start("estatisticas")});
 
         let botaoIniciar = this.add.image(664.5, 605, "botaoIniciar1").setScale(0.55)
-        .setInteractive().on('pointerdown', () => { this.scene.start("entrarPartida",{socket: this.socket})});
+        .setInteractive().on('pointerdown', () => { this.scene.start("entrarPartida",{socket: this.socket})
+        document.getElementById("input1").style.display = "inline",
+        document.getElementById("input2").style.display = "inline"});
 
         let botaoFechar = this.add.image(664.5, 555, "botaoFechar1").setScale(0.55)
-        .setInteractive().on('pointerdown', () => { this.scene.start("criarPartida")});
+        .setInteractive().on('pointerdown', () => { this.scene.start("telaInicial"),
+        document.getElementById("input2").style.display = "inline";}
+        )
+         ;
 
        
         let config = this.cache.json.get('gamma_json');
@@ -53,7 +61,7 @@ class menuPrincipal extends Phaser.Scene{
         this.texto4 = this.add.bitmapText(452, 431, "gamma", 'SAIR');
         this.texto4.setScale(1.5);
        
-        this.textoMenu = this.add.bitmapText(20, 95, "gamma", 'MENU PRINCIPAL');
+        this.textoMenu = this.add.bitmapText(10, 40, "gamma", 'MENU PRINCIPAL');
         this.textoMenu.setScale(2);
 
 
