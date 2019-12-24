@@ -31,11 +31,13 @@ class jogo extends Phaser.Scene {
         this.load.image('powerUpExplosao','img/PUExplosao.png');
         this.load.image('powerUpVelocidade','img/PUVelocidade.png');
         this.load.image('powerUpBomba','img/PUBomba.png');
+        this.load.image('display','img/displayPontos.png');
 
         this.load.path = './fontes/';
         this.load.image('gamma', 'font.png');
         this.load.json('gamma_json', 'gamma.json');
     
+        
 
 
     }
@@ -46,6 +48,9 @@ class jogo extends Phaser.Scene {
         this.outrosPlayers = this.physics.add.group();
         this.players = this.physics.add.group();
         this.vivo=true;
+        this.display;
+        
+
         this.add.image(390,338,'tela');
         //adicionando os grupos
         this.blocos = this.physics.add.staticGroup();
@@ -110,9 +115,9 @@ class jogo extends Phaser.Scene {
         this.socket.on('mapa', function (ma) {
             self.criandoMapa(self,ma);
             self.mapa=ma;
+            self.adicionarScore(self);
         });
-
-
+        
         //adicionando os controles
         this.cursor = this.input.keyboard.createCursorKeys();
         this.cursor.barra =  this.input.keyboard.addKey(32);
@@ -223,6 +228,15 @@ class jogo extends Phaser.Scene {
         outroPlayer.playerId = playerInfo.playerId;
         outroPlayer.anims.play('turn',true);
         self.outrosPlayers.add(outroPlayer);
+    }
+
+    adicionarScore(self){
+        self.display = self.add.image(1000,10,'display');
+        display.setScale(0.5);
+        
+        this.texto7 = this.add.bitmapText(1000, 10, "gamma", '');
+        this.texto7.setScale(1.5);
+
     }
 
     criandoMapa(self,mapa){
