@@ -10,7 +10,6 @@ class menuPrincipal extends Phaser.Scene{
     preload(){
         this.load.image("fundo2", "img/telaNormal.jpg");
         //this.load.image("fundo3", "img/telaSimples.jpg");
-
         this.load.image("botaoCriar1", "img/botaoCriar.png");
         this.load.image("botaoEstatistica1", "img/botaoEstatistica.png");
         this.load.image("botaoFechar1", "img/botaoFechar.png");
@@ -44,7 +43,7 @@ class menuPrincipal extends Phaser.Scene{
         document.getElementById("input2").style.display = "inline";}
         )
          ;
-
+       
        
         let config = this.cache.json.get('gamma_json');
         this.cache.bitmapFont.add('gamma', Phaser.GameObjects.RetroFont.Parse(this, config));
