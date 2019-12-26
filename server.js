@@ -3,6 +3,12 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
 
+var mongoose = require('mongoose');  
+mongoose.connect('mongodb+srv://admin:admin@cluster0-vohgh.azure.mongodb.net/test?retryWrites=true&w=majority',{useNewUrlParser: true,useUnifiedTopology: true});
+const jogador = require('./models/jogador');
+const Jogador = mongoose.model('Jogador');
+
+
 var salas ={};
 
 app.use(express.static(__dirname + '/public'));
@@ -11,36 +17,92 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname + '/public/telaInicial.html');
 });
 
+
 io.on('connection', function (socket) {
     var sala=undefined;
     var nome="";
+    var jogadorDados=undefined;
+    socket.on("Comecar",()=>{
+      console.log(salas[sala].quantidade);
+      if(salas[sala].quantidade>=2){
+        io.in(sala).emit('Lets go');
+        salas[sala].iniciada=true;
+      }else{
+        socket.emit('Players insuficientes');
+      }
+    });
+    socket.on('Estatisticas',()=>{
+      socket.emit("Dados",jogadorDados);
+    });
+    socket.on('Atualizar',()=>{
+      Jogador
+      .find({
+        nome: nome
+      }).then( dados=>{
+          jogadorDados=dados[0];
+      }).catch(e => {
+        console.log("erro")
+      });
+      console.log(jogadorDados.id)
+    });
     socket.on('Nome jogador',(name)=>{
+      Jogador
+      .find({
+        nome: name
+      }).then( dados=>{
+        if(dados.length==0){
+          jogadorDados = new Jogador({
+            nome: name,
+            pontuacaoTotal:0,
+            pontuacaoMaior:0,
+            kills:0,
+            death:0,
+            partidasTotal:0,
+            partidasGanhas:0
+          });
+          jogadorDados.save()
+          .then( x=>{
+            console.log("Salvou")
+          }).catch(e => {
+            console.log(e)
+          });
+        }else{
+          jogadorDados=dados[0];
+        }
+      }).catch(e => {
+        console.log("erro")
+      });
       nome = name;
     });
     socket.on('entrou',()=>{
-      console.log(sala)
       socket.emit('mapa', salas[sala].mapa);
-      addPlayer({socket: socket, nome: sala});
       socket.emit('passandoPlayers', salas[sala].players);
       socket.broadcast.to(sala).emit('novoPlayer', salas[sala].players[socket.id]);
     });
     socket.on('Entrar Sala',(dados)=>{
-      if(salas[dados.nome].senha == dados.senha){
-        sala=dados.nome;
-        socket.join(dados.nome);
-        socket.emit("Senha certa")
+      if(salas[dados.nome]==undefined){
+        socket.emit("Sala nao existente");
+      }else if(salas[dados.nome].iniciada==true){
+        socket.emit("Partida em andamento");
       }else{
-        socket.emit("Senha errada")
-      }
-      
+        if(salas[dados.nome].senha == dados.senha){
+          sala=dados.nome;
+          salas[sala].espera+=1;
+          socket.join(dados.nome);
+          socket.emit("Senha certa")
+          addPlayer({socket: socket, nome: sala});
+        }else{
+          socket.emit("Senha errada")
+        }
+      } 
+       
     });
 
     socket.on('Verificar nome',(dados)=>{
       if(salas[dados.nome] == undefined){
         socket.emit("Aprovado")
       }else{
-        socket.emit("Reprovado")
-        
+        socket.emit("Reprovado")  
       }
     });
     socket.on('Criar sala',(dados) => {
@@ -48,17 +110,16 @@ io.on('connection', function (socket) {
         criador: nome,
         nome: dados.nome,
         senha: dados.senha,
-        quantidade: 1,
+        quantidade: 0,
         iniciada: false,
         mapa: undefined,
-        players: {}
+        players: {},
+        espera: 0
       }
       sala=dados.nome;
       criandoMapa(dados.nome);
       socket.join(dados.nome);
-
-      //passando mapa
-      
+      addPlayer({socket: socket, nome: sala});      
     });
     
     // player movimentando
@@ -79,6 +140,10 @@ io.on('connection', function (socket) {
       }
     });
 
+    socket.on('Kill Servidor',  (id) => {
+      socket.broadcast.to(id).emit('Kill');
+    });
+
     socket.on('destruidoBomba',() => {
       salas[sala].players[socket.id].quantidade+=1;
     });
@@ -92,21 +157,59 @@ io.on('connection', function (socket) {
       }
     });
 
-    socket.on('playerEliminado',() => {
+    socket.on('Acabou',(dados)=>{
+      var pm=jogadorDados.pontuacaoMaior;
+      if(pm<dados.pontuacao){
+        pm=dados.pontuacao;
+      }
+      Jogador.findByIdAndUpdate(jogadorDados.id, {
+        $set: {
+          pontuacaoTotal: jogadorDados.pontuacaoTotal+dados.pontuacao,
+          pontuacaoMaior: pm,
+          kills: jogadorDados.kills+dados.kils,
+          death: jogadorDados.death+1,
+          partidasTotal: jogadorDados.partidasTotal+1,
+          partidasGanhas: jogadorDados.partidasGanhas+1
+        }
+      });
       socket.broadcast.to(sala).emit('desconectado', socket.id);
-      salas[sala].players.splice(socket.id,1)
+      salas[sala].quantidade-=1;
+      socket.leave(sala);
+      salas[sala]=undefined;
+      sala=undefined;
+    });
+    socket.on('playerEliminado',(dados) => {
+
+      var pm=jogadorDados.pontuacaoMaior;
+      if(pm<dados.pontuacao){
+        pm=dados.pontuacao;
+      }
+      Jogador.findByIdAndUpdate(jogadorDados.id, {
+        $set:{
+          pontuacaoTotal: jogadorDados.pontuacaoTotal+dados.pontuacao,
+          pontuacaoMaior: pm,
+          kills: jogadorDados.kills+dados.kills,
+          death: jogadorDados.death+1,
+          partidasTotal: jogadorDados.partidasTotal+1
+        }
+      }).then(x => {}).catch(e => {console.log(e)});
+    
+      socket.broadcast.to(sala).emit('desconectado', socket.id);
       salas[sala].quantidade-=1
-      delete salas[sala].players[socket.id]
+      if( salas[sala].quantidade==1){
+        socket.broadcast.to(sala).emit('Game Over');
+      }
+      socket.leave(sala);
+      sala=undefined;
+      
     });
 
     socket.on('disconnect',() => {
       console.log('user disconnected');
       if(sala!=undefined){
         socket.broadcast.to(sala).emit('desconectado', socket.id);
-        delete salas[sala].players[socket.id]
         salas[sala].quantidade-=1
       }
-      
     });
 });
 
@@ -174,7 +277,7 @@ function criandoMapa(nome){
 
 function addPlayer(dados){
   //adicionando as posiçoes de cada player a medida que conectam
-  if(salas[dados.nome].quantidade==1){
+  if(salas[dados.nome].quantidade==0){
     salas[dados.nome].quantidade+=1;
     salas[dados.nome].players[dados.socket.id]={
       playerId: dados.socket.id,
@@ -185,7 +288,7 @@ function addPlayer(dados){
       quantidade:1,
       vivo: true
     }
-  }else if(salas[dados.nome].quantidade==2){
+  }else if(salas[dados.nome].quantidade==1){
     salas[dados.nome].quantidade+=1;
     salas[dados.nome].players[dados.socket.id]={
       playerId: dados.socket.id,
@@ -196,7 +299,7 @@ function addPlayer(dados){
       quantidade: 1,
       vivo: true
     }
-  }else if(salas[dados.nome].quantidade==3){
+  }else if(salas[dados.nome].quantidade==2){
     salas[dados.nome].quantidade+=1;
     salas[dados.nome].players[dados.socket.id]={
       playerId: dados.socket.id,

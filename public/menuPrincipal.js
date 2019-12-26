@@ -5,11 +5,11 @@ class menuPrincipal extends Phaser.Scene{
     }
     init(data){
         this.socket=data.socket;
-        console.log(this.socket.id);
     }
     preload(){
         this.load.image("fundo2", "img/telaNormal.jpg");
         //this.load.image("fundo3", "img/telaSimples.jpg");
+
         this.load.image("botaoCriar1", "img/botaoCriar.png");
         this.load.image("botaoEstatistica1", "img/botaoEstatistica.png");
         this.load.image("botaoFechar1", "img/botaoFechar.png");
@@ -21,21 +21,24 @@ class menuPrincipal extends Phaser.Scene{
     }
 
     create(){
+        this.socket.emit("Atualizar");
         var x = this.add.image(490, 338, "fundo2");
         x.setScale(0.75);
 
         let botaoCriar = this.add.image(664.5, 270, "botaoCriar1").setScale(0.55).
-        setInteractive().on('pointerdown', () => { this.scene.start("criarPartida",{socket: this.socket},
-        document.getElementById("input1").style.display = "inline",
-        document.getElementById("input2").style.display = "inline"
+        setInteractive().on('pointerdown', () => { 
+            this.scene.start("criarPartida",{socket: this.socket},
+            document.getElementById("input1").style.display = "inline",
+            document.getElementById("input2").style.display = "inline"
         )});
 
         let botaoEstatistica = this.add.image(664.5, 410, "botaoEstatistica1").setScale(0.55)
-        .setInteractive().on('pointerdown', () => { this.scene.start("estatisticas")});
+        .setInteractive().on('pointerdown', () => { this.scene.start("estatisticas",{socket: this.socket})
+        });
 
         let botaoIniciar = this.add.image(664.5, 605, "botaoIniciar1").setScale(0.55)
         .setInteractive().on('pointerdown', () => { this.scene.start("entrarPartida",{socket: this.socket})
-        document.getElementById("input1").style.display = "inline",
+        document.getElementById("input1").style.display = "inline"
         document.getElementById("input2").style.display = "inline"});
 
         let botaoFechar = this.add.image(664.5, 555, "botaoFechar1").setScale(0.55)
@@ -43,7 +46,7 @@ class menuPrincipal extends Phaser.Scene{
         document.getElementById("input2").style.display = "inline";}
         )
          ;
-       
+
        
         let config = this.cache.json.get('gamma_json');
         this.cache.bitmapFont.add('gamma', Phaser.GameObjects.RetroFont.Parse(this, config));

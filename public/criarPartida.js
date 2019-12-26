@@ -5,7 +5,6 @@ class criarPartida extends Phaser.Scene{
     }
     init(data){
         this.socket=data.socket;
-        console.log(this.socket.id);
     }
     preload(){
         this.load.image("fundoCriar", "img/telaCriarSala.jpg");
@@ -36,11 +35,14 @@ class criarPartida extends Phaser.Scene{
 
         
         this.socket.on('Aprovado',()=>{
-            console.log("foi aprovado")
-            this.socket.emit('Criar sala',{nome: "teste", senha: '1234'});
+            var nome= document.getElementById('input1').value;
+            var senha= document.getElementById('input2').value;
+            this.socket.emit('Criar sala',{nome: nome, senha: senha});
             document.getElementById("input1").style.display = "none";
             document.getElementById("input2").style.display = "none";
-            this.scene.start("telaEspera",{socket: this.socket});
+            document.getElementById('input1').value="";
+            document.getElementById('input2').value="";
+            this.scene.start("telaEspera",{socket: this.socket, sala: nome});
         });
         this.socket.on('Reprovado',()=>{
             alert("Nome ja utilizado");
@@ -59,7 +61,16 @@ class criarPartida extends Phaser.Scene{
 
         let botaoConfirmar = this.add.image(475, 537, "botaoConfirmar").
         setInteractive().on('pointerdown', () => {
-            this.socket.emit("Verificar nome",{nome: "teste"})
+            var nome= document.getElementById('input1').value;
+            var senha= document.getElementById('input2').value;
+            if(nome==""){
+                alert("O nome não pode estar vazio");
+            }else if(senha==''){
+                alert("A senha não pode estar vazio");
+            }else{
+                this.socket.emit("Verificar nome",{nome: nome});
+            }
+            
         });
 
         this.texto1 = this.add.bitmapText(135, 320, "gamma", 'NOME');

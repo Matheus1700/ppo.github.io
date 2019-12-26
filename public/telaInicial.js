@@ -64,13 +64,16 @@ create() {
 
 
     let botaoIniciar = this.add.image(475, 537, "botao").setInteractive().on('pointerdown', () => {
-        var nome= document.getElementById('input1').value;
-        var senha= document.getElementById('input2').value;
-        console.log(nome," ",senha);
-        this.socket.emit('Nome jogador',nome)
-        document.getElementById("input1").style.display = "none";
-        document.getElementById("input2").style.display = "none";
-        this.scene.start("menuPrincipal",{socket: this.socket, nome: nome}) 
+        var nome= document.getElementById('input2').value;
+        if(nome!=""){
+            this.socket.emit('Nome jogador',nome)
+            document.getElementById('input2').value = "";
+            document.getElementById("input1").style.display = "none";
+            document.getElementById("input2").style.display = "none";
+            this.scene.start("menuPrincipal",{socket: this.socket}) 
+        }else{
+            alert("Você precisa colocar um nome");
+        }
     });;
 
     //

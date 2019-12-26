@@ -25,8 +25,19 @@ class entrarPartida extends Phaser.Scene{
             alert("Senha incorreta");
         });
         this.socket.on("Senha certa",()=>{
+            document.getElementById('input1').value="";
+            document.getElementById('input2').value="";
+            document.getElementById("input1").style.display = "none",
+            document.getElementById("input2").style.display = "none";
             this.scene.start("telaEspera",{socket: this.socket});
         });
+        this.socket.on("Sala nao existente",()=>{
+            alert("Sala não existente");
+        });
+        this.socket.on("Partida em andamento",()=>{
+            alert("Essa sala já foi iniciada");
+        });
+
         this.add.image(490, 338, "fundoEntrar");
 
         let seta = this.add.image(30, 40, "seta").
@@ -43,10 +54,16 @@ class entrarPartida extends Phaser.Scene{
 
     
         let botaoEntrar = this.add.image(475, 530, "botaoEntrar").
-        setInteractive().on('pointerdown', () => { 
-            this.socket.emit("Entrar Sala",{nome: "teste", senha:"1234"}),
-            document.getElementById("input1").style.display = "none",
-            document.getElementById("input2").style.display = "none";
+        setInteractive().on('pointerdown', () => {
+            var nome= document.getElementById('input1').value;
+            var senha= document.getElementById('input2').value;
+            if(nome==""){
+                alert("O nome não pode estar vazio");
+            }else if(senha==''){
+                alert("A senha não pode estar vazio");
+            }else{
+                this.socket.emit("Entrar Sala",{nome: nome, senha:senha});
+            }
         });
 
     

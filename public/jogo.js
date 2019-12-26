@@ -33,13 +33,10 @@ class jogo extends Phaser.Scene {
         this.load.image('powerUpBomba','img/PUBomba.png');
         this.load.image('display','img/displayPontos.png');
 
+       
         this.load.path = './fontes/';
         this.load.image('gamma', 'font.png');
         this.load.json('gamma_json', 'gamma.json');
-    
-        
-
-
     }
 
     create(){
@@ -49,7 +46,9 @@ class jogo extends Phaser.Scene {
         this.players = this.physics.add.group();
         this.vivo=true;
         this.display;
-        
+        this.pontuacao = 0;
+        this.texto;
+        this.kills=0;
 
         this.add.image(390,338,'tela');
         //adicionando os grupos
@@ -57,6 +56,7 @@ class jogo extends Phaser.Scene {
         this.caixas = this.physics.add.staticGroup();
         this.bombas = this.physics.add.staticGroup();
         this.explosoes = this.physics.add.staticGroup();
+        this.explosoes.id;
         this.powerUps = this.physics.add.staticGroup();
 
         let config = this.cache.json.get('gamma_json');
@@ -80,6 +80,13 @@ class jogo extends Phaser.Scene {
             self.addOutrosPlayers(self, playerInfo);
         });
 
+        this.socket.on('Kill',  () => {
+            this.kills+=1;
+            this.pontuacao+=300;
+            this.texto.setText((this.pontuacao+"").toUpperCase());
+            this.texto.setOrigin(0.5);
+        });
+
         this.socket.on('playerMovimentou', function (playerInfo) {
             self.outrosPlayers.getChildren().forEach(outroPlayer => {
               if (playerInfo.playerId === outroPlayer.playerId) {
@@ -99,8 +106,11 @@ class jogo extends Phaser.Scene {
                 self.mapa[(playerInfo.y-26)/52][(playerInfo.x-26)/52]=0;
                 if(playerInfo.Id==self.socket.id){
                     self.socket.emit('destruidoBomba');
+                    self.hitBomb(bomba,self,playerInfo,true);
+                }else{
+                    self.hitBomb(bomba,self,playerInfo,false);
                 }
-                self.hitBomb(bomba,self,playerInfo);
+                
             },2000);
         });
 
@@ -131,6 +141,8 @@ class jogo extends Phaser.Scene {
         this.physics.add.overlap( this.powerUps,  this.outrosPlayers, this.destruirPowerUp, null, this);
         this.physics.add.overlap( this.powerUps,  this.explosoes, this.destruirPowerUp, null, this);
         this.physics.add.overlap( this.players,  this.explosoes, this.destruirPlayer, null, this);
+        this.physics.add.overlap( this.outrosPlayers,  this.explosoes, this.destruirPlayers, null, this);
+        
 
         this.anims.create({
             key:'left',
@@ -222,7 +234,7 @@ class jogo extends Phaser.Scene {
         self.player.velocidade=150;
     }
 
-    addOutrosPlayers(self, playerInfo){
+    addOutrosPlayers(   self, playerInfo){
         const outroPlayer = self.add.sprite(playerInfo.x,playerInfo.y,'personagem');
         outroPlayer.setTint(0xff0000);
         outroPlayer.playerId = playerInfo.playerId;
@@ -232,11 +244,11 @@ class jogo extends Phaser.Scene {
 
     adicionarScore(self){
         self.display = self.add.image(1000,10,'display');
-        display.setScale(0.5);
-        
-        this.texto7 = this.add.bitmapText(1000, 10, "gamma", '');
-        this.texto7.setScale(1.5);
-
+        self.display.setScale(0.8);
+        console.log(self.pontuacao)
+        self.texto = self.add.bitmapText(950, 25, "gamma", (self.pontuacao+"").toUpperCase());
+        self.texto.setOrigin(0.5);
+        self.texto.setScale(1.5);
     }
 
     criandoMapa(self,mapa){
@@ -286,7 +298,7 @@ class jogo extends Phaser.Scene {
         self.anims.create({key: 'esquerdaGG',frames: [{key: 'explosao', frame: 27}],frameRate: 20});
     }
 
-    hitBomb(bomba,self,playerInfo){
+    hitBomb(bomba,self,playerInfo,jogadorAtual){
         var x = bomba.x;
         var y = bomba.y; 
         var potencia = playerInfo.potencia;
@@ -301,6 +313,9 @@ class jogo extends Phaser.Scene {
         }else{
             animacao='GG';
         }
+
+        
+
         var TodasExplosoes=new Array();
         TodasExplosoes.push(self.explosoes.create(x,y,'explosao').play('centro'+animacao));
         for(var i=0,es=true,di=true,ci=true,ba=true,x1=x,x2=x,y1=y,y2=y;i<potencia;i++){
@@ -310,15 +325,27 @@ class jogo extends Phaser.Scene {
             y2+=52;
             if(i==potencia-1){  
                 if(es && self.mapa[(y-26)/52][(x1-26)/52]!=1){
+                    if((self.mapa[(y-26)/52][(x1-26)/52]==3 || self.mapa[(y-26)/52][(x1-26)/52]==-2 || self.mapa[(y-26)/52][(x1-26)/52]==-3 || self.mapa[(y-26)/52][(x1-26)/52]==-4) && jogadorAtual){
+                        self.pontuacao+=10;
+                    }
                     TodasExplosoes.push(self.explosoes.create(x1,y,'explosao').play('esquerda'+animacao));
                 }
                 if(di && self.mapa[(y-26)/52][(x2-26)/52]!=1){
+                    if((self.mapa[(y-26)/52][(x2-26)/52]==3 || self.mapa[(y-26)/52][(x2-26)/52]==-2 || self.mapa[(y-26)/52][(x2-26)/52]==-3 || self.mapa[(y-26)/52][(x2-26)/52]==-4) && jogadorAtual){
+                        self.pontuacao+=10;
+                    }
                     TodasExplosoes.push(self.explosoes.create(x2,y,'explosao').play('direita'+animacao)); 
                 }
                 if(ci && self.mapa[(y1-26)/52][(x-26)/52]!=1){
+                    if((self.mapa[(y1-26)/52][(x-26)/52]==3 || self.mapa[(y1-26)/52][(x-26)/52]==-2 || self.mapa[(y1-26)/52][(x-26)/52]==-3 || self.mapa[(y1-26)/52][(x-26)/52]==-4) && jogadorAtual){
+                        self.pontuacao+=10;
+                    }
                     TodasExplosoes.push(self.explosoes.create(x,y1,'explosao').play('cima'+animacao)); 
                 }
                 if(ba && self.mapa[(y2-26)/52][(x-26)/52]!=1){
+                    if((self.mapa[(y2-26)/52][(x-26)/52]==3 || self.mapa[(y2-26)/52][(x-26)/52]==-2 || self.mapa[(y2-26)/52][(x-26)/52]==-3 || self.mapa[(y2-26)/52][(x-26)/52]==-4) && jogadorAtual){
+                        self.pontuacao+=10;
+                    }
                     TodasExplosoes.push(self.explosoes.create(x,y2,'explosao').play('baixo'+animacao)); 
                 }          
             }else{
@@ -326,12 +353,18 @@ class jogo extends Phaser.Scene {
                 if(es && self.mapa[auxY][auxX]!=1){
                     TodasExplosoes.push(self.explosoes.create(x1,y,'explosao').play('meioLado'+animacao)); 
                 }if(es && (self.mapa[auxY][auxX]==3 || self.mapa[auxY][auxX]==1 || self.mapa[auxY][auxX]==-2 || self.mapa[auxY][auxX]==-3 || self.mapa[auxY][auxX]==-4)){
+                    if(jogadorAtual && (self.mapa[auxY][auxX]==3 || self.mapa[auxY][auxX]==-2 || self.mapa[auxY][auxX]==-3 || self.mapa[auxY][auxX]==-4)){
+                        self.pontuacao+=10;
+                    }
                     es=false;
                 }
                 auxX=(x2-26)/52;
                 if(di && self.mapa[auxY][auxX]!=1){
                     TodasExplosoes.push(self.explosoes.create(x2,y,'explosao').play('meioLado'+animacao)); 
                 }if(di && (self.mapa[auxY][auxX]==3 || self.mapa[auxY][auxX]==1 || self.mapa[auxY][auxX]==-2 || self.mapa[auxY][auxX]==-3 || self.mapa[auxY][auxX]==-4)){
+                    if(jogadorAtual && (self.mapa[auxY][auxX]==3 || self.mapa[auxY][auxX]==-2 || self.mapa[auxY][auxX]==-3 || self.mapa[auxY][auxX]==-4)){
+                        self.pontuacao+=10;
+                    }
                     di=false
                 }
                 auxX=(x-26)/52;
@@ -339,24 +372,36 @@ class jogo extends Phaser.Scene {
                 if(ci && self.mapa[auxY][auxX]!=1){
                     TodasExplosoes.push(self.explosoes.create(x,y1,'explosao').play('meioCima'+animacao)); 
                 }if(ci && (self.mapa[auxY][auxX]==1 || self.mapa[auxY][auxX]==3 || self.mapa[auxY][auxX]==-2 || self.mapa[auxY][auxX]==-3 || self.mapa[auxY][auxX]==-4)){
+                    if(jogadorAtual && (self.mapa[auxY][auxX]==3 || self.mapa[auxY][auxX]==-2 || self.mapa[auxY][auxX]==-3 || self.mapa[auxY][auxX]==-4)){
+                        self.pontuacao+=10;
+                    }
                     ci=false
                 }
                 auxY=(y2-26)/52;
                 if(ba && self.mapa[auxY][auxX]!=1){
                     TodasExplosoes.push(self.explosoes.create(x,y2,'explosao').play('meioCima'+animacao)); 
                 }if(ba && (self.mapa[auxY][auxX]==1 || self.mapa[auxY][auxX] ==3 || self.mapa[auxY][auxX] ==-2 || self.mapa[auxY][auxX] ==-3 || self.mapa[auxY][auxX] ==-4)){
+                    if(jogadorAtual && (self.mapa[auxY][auxX]==3 || self.mapa[auxY][auxX]==-2 || self.mapa[auxY][auxX]==-3 || self.mapa[auxY][auxX]==-4)){
+                        self.pontuacao+=10;
+                    }
                     ba=false
                 }   
             }            
         }
-                            
+        for(var i=0;i<TodasExplosoes.length;i++){
+            TodasExplosoes[i].id=self.socket.id;
+        }
+        
             window.setTimeout(() => {
                 for(var i=0;i<TodasExplosoes.length;i++){
                     TodasExplosoes[i].destroy();
                 }
                 self.mapa[(y-26)/52][(x-26)/52]=0;
             },1000);
-            
+        if(jogadorAtual){
+            self.texto.setText((self.pontuacao+"").toUpperCase());
+            self.texto.setOrigin(0.5);
+        }
         
     }
 
@@ -380,13 +425,23 @@ class jogo extends Phaser.Scene {
     pegarPowerUp(powerUp){
         if(this.mapa[(powerUp.y-26)/52][(powerUp.x-26)/52]==-2){
             this.socket.emit('powerUpPego','BOMBA');
+            this.pontuacao+=100;
+            this.texto.setText((this.pontuacao+"").toUpperCase());
+            this.texto.setOrigin(0.5);
         }if(this.mapa[(powerUp.y-26)/52][(powerUp.x-26)/52]==-3){
             this.player.velocidade+=20;
+            this.pontuacao+=100;
+            this.texto.setText((this.pontuacao+"").toUpperCase());
+            this.texto.setOrigin(0.5);
         } if(this.mapa[(powerUp.y-26)/52][(powerUp.x-26)/52]==-4){
             this.socket.emit('powerUpPego','POTENCIA');
+            this.pontuacao+=100;
+            this.texto.setText((this.pontuacao+"").toUpperCase());
+            this.texto.setOrigin(0.5);
         }
         this.mapa[(powerUp.y-26)/52][(powerUp.x-26)/52]=0;
         powerUp.destroy(); 
+        
     }
 
     destruirPowerUp(powerUp){
@@ -394,10 +449,17 @@ class jogo extends Phaser.Scene {
         powerUp.destroy();
     }
     
-    destruirPlayer(player){
-        player.visible=false;
-        this.socket.emit('playerEliminado');
-        this.vivo=false;
+    destruirPlayer(player,explosao){
+        if(this.vivo==true){
+            player.visible=false;
+            this.socket.emit('playerEliminado',{pontuacao: this.pontuacao,kills: this.kills});
+            this.vivo=false;
+            this.socket.emit("Kill Servidor",explosao.id);
+        }
+ 
+    }
+    destruirPlayers(player,explosao){
+        player.destroy();
     }
 }
 

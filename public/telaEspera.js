@@ -5,7 +5,7 @@ class telaEspera extends Phaser.Scene{
     }
     init(data){
         this.socket=data.socket;
-        console.log(this.socket.id);
+        this.sala=data.nome;
     }
     preload(){
         this.load.image("fundoEspera", "img/telaEspera.jpg");
@@ -32,8 +32,17 @@ class telaEspera extends Phaser.Scene{
         let divPlayer = this.add.image(390, 300, "playerEspera");
         divPlayer.setScale(0.5);
 
+        this.socket.on('Lets go',() => {
+            this.scene.start("jogo",{socket: this.socket, sala: this.sala});
+        });
+        this.socket.on('Players insuficientes',() => {
+            alert("Players insuficientes");
+        });
+
         let botaoIniciar = this.add.image(475, 565, "botaoIniciar").setScale(0.9).
-        setInteractive().on('pointerdown', () => { this.scene.start("jogo",{socket: this.socket, sala: "teste"})});
+        setInteractive().on('pointerdown', () => {
+            this.socket.emit("Comecar");
+        });
 
             
         
