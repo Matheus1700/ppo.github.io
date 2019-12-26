@@ -32,8 +32,8 @@ class jogo extends Phaser.Scene {
         this.load.image('powerUpVelocidade','img/PUVelocidade.png');
         this.load.image('powerUpBomba','img/PUBomba.png');
         this.load.image('display','img/displayPontos.png');
-        this.load.image('win', 'img/playerWin.png');
-        this.load.image('lose', 'img/playerLose.png')
+        this.load.image('win', 'img/telaVoltar.png');
+        this.load.image('lose', 'img/telaVoltarLose.png')
        
         this.load.path = './fontes/';
         this.load.image('gamma', 'font.png');
@@ -130,8 +130,9 @@ class jogo extends Phaser.Scene {
         });
 
         this.socket.on('Game Over',()=>{
-            let botaoFim = this.add.image(30, 40, "win").
+            let botaoFim = this.add.image(460, 338, "win").
             setInteractive().on('pointerdown', () => { this.scene.start("menuPrincipal",{socket:this.socket})});;
+            botaoFim.setOrigin(0.5);
             botaoFim.setScale(1.5);
             this.socket.emit('Acabou',{pontuacao: this.pontuacao, kills: this.kills});
         })
@@ -463,11 +464,12 @@ class jogo extends Phaser.Scene {
             this.socket.emit('playerEliminado',{pontuacao: this.pontuacao,kills: this.kills});
             this.vivo=false;
             this.socket.emit("Kill Servidor",explosao.id);
-            let botaoFim = this.add.image(30, 40, "lose").
+            let botaoFim = this.add.image(460, 338, "lose").
             setInteractive().on('pointerdown', () => { this.scene.start("menuPrincipal",{socket:this.socket})});;
+            botaoFim.setOrigin(0.5);
             botaoFim.setScale(1.5);
         }
- 
+    
     }
     destruirPlayers(player,explosao){
         player.destroy();
