@@ -130,8 +130,11 @@ class jogo extends Phaser.Scene {
         });
 
         this.socket.on('Game Over',()=>{
-            let botaoFim = this.add.image(460, 338, "win").
-            setInteractive().on('pointerdown', () => { this.scene.start("menuPrincipal",{socket:this.socket})});;
+            let botaoFim = this.add.image(510, 338, "win").
+            setInteractive().on('pointerdown', () => { 
+                document.getElementById("input2").style.display = "inline";
+                this.scene.start("telaInicial")
+            });;
             botaoFim.setOrigin(0.5);
             botaoFim.setScale(1.5);
             this.socket.emit('Acabou',{pontuacao: this.pontuacao, kills: this.kills});
@@ -464,8 +467,11 @@ class jogo extends Phaser.Scene {
             this.socket.emit('playerEliminado',{pontuacao: this.pontuacao,kills: this.kills});
             this.vivo=false;
             this.socket.emit("Kill Servidor",explosao.id);
-            let botaoFim = this.add.image(460, 338, "lose").
-            setInteractive().on('pointerdown', () => { this.scene.start("menuPrincipal",{socket:this.socket})});;
+            let botaoFim = this.add.image(510, 338, "lose").
+            setInteractive().on('pointerdown', () => { 
+                document.getElementById("input2").style.display = "inline";
+                this.scene.start("telaInicial")
+            });;
             botaoFim.setOrigin(0.5);
             botaoFim.setScale(1.5);
         }
