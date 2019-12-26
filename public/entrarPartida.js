@@ -29,7 +29,7 @@ class entrarPartida extends Phaser.Scene{
             document.getElementById('input2').value="";
             document.getElementById("input1").style.display = "none",
             document.getElementById("input2").style.display = "none";
-            this.scene.start("telaEspera",{socket: this.socket});
+            this.scene.start("telaEsperaPlayer",{socket: this.socket});
         });
         this.socket.on("Sala nao existente",()=>{
             alert("Sala não existente");

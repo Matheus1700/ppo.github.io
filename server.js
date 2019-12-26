@@ -35,15 +35,20 @@ io.on('connection', function (socket) {
       socket.emit("Dados",jogadorDados);
     });
     socket.on('Atualizar',()=>{
-      Jogador
-      .find({
+      if(jogadorDados!=undefined){
+        Jogador
+        .find({
         nome: nome
       }).then( dados=>{
           jogadorDados=dados[0];
       }).catch(e => {
         console.log("erro")
       });
-      console.log(jogadorDados.id)
+      console.log(jogadorDados);
+      }else{
+        socket.emit('Indefinido');
+      }
+      
     });
     socket.on('Nome jogador',(name)=>{
       Jogador
@@ -63,11 +68,13 @@ io.on('connection', function (socket) {
           jogadorDados.save()
           .then( x=>{
             console.log("Salvou")
+            socket.emit("Dados resgatados");
           }).catch(e => {
             console.log(e)
           });
         }else{
           jogadorDados=dados[0];
+          socket.emit("Dados resgatados");
         }
       }).catch(e => {
         console.log("erro")
@@ -124,20 +131,25 @@ io.on('connection', function (socket) {
     
     // player movimentando
     socket.on('playerMovimentando', movementData => {
-      salas[sala].players[socket.id].x = movementData.x;
+      if(sala!=undefined){
+        salas[sala].players[socket.id].x = movementData.x;
       salas[sala].players[socket.id].y = movementData.y;
       salas[sala].players[socket.id].direcao = movementData.direcao;
 
       // avisa quando se moverem
       socket.broadcast.to(sala).emit('playerMovimentou', salas[sala].players[socket.id]);
+      }
+      
     });
     //Verificar e criando bomba
     socket.on('verificarBomba',playerInfo => {
+      if(sala!=undefined){
       if(salas[sala].players[playerInfo.Id].quantidade>0){
         salas[sala].players[playerInfo.Id].quantidade-=1;
         playerInfo.potencia =  salas[sala].players[playerInfo.Id].potencia;
         io.emit('criarBomba',playerInfo);
       }
+    }
     });
 
     socket.on('Kill Servidor',  (id) => {
@@ -145,19 +157,25 @@ io.on('connection', function (socket) {
     });
 
     socket.on('destruidoBomba',() => {
-      salas[sala].players[socket.id].quantidade+=1;
+      if(sala!=undefined){
+        salas[sala].players[socket.id].quantidade+=1;
+      }
     });
 
     socket.on('powerUpPego', tipo =>{
+      if(sala!=undefined){
       if(tipo=="BOMBA"){
         salas[sala].players[socket.id].quantidade+=1;
       }
       if(tipo=="POTENCIA"){
         salas[sala].players[socket.id].potencia+=1;
       }
+    }
     });
 
     socket.on('Acabou',(dados)=>{
+      console.log(dados)
+      if(jogadorDados!=undefined){
       var pm=jogadorDados.pontuacaoMaior;
       if(pm<dados.pontuacao){
         pm=dados.pontuacao;
@@ -166,20 +184,23 @@ io.on('connection', function (socket) {
         $set: {
           pontuacaoTotal: jogadorDados.pontuacaoTotal+dados.pontuacao,
           pontuacaoMaior: pm,
-          kills: jogadorDados.kills+dados.kils,
-          death: jogadorDados.death+1,
+          kills: jogadorDados.kills+dados.kills,
+          death: jogadorDados.death,
           partidasTotal: jogadorDados.partidasTotal+1,
           partidasGanhas: jogadorDados.partidasGanhas+1
         }
-      });
+      }).then(x => {}).catch(e => {console.log(e)});
       socket.broadcast.to(sala).emit('desconectado', socket.id);
       salas[sala].quantidade-=1;
       socket.leave(sala);
       salas[sala]=undefined;
       sala=undefined;
+    }else{
+      console.log(name+" deu erro")
+    }
     });
     socket.on('playerEliminado',(dados) => {
-
+      if(jogadorDados!=undefined && sala!=undefined){
       var pm=jogadorDados.pontuacaoMaior;
       if(pm<dados.pontuacao){
         pm=dados.pontuacao;
@@ -201,7 +222,9 @@ io.on('connection', function (socket) {
       }
       socket.leave(sala);
       sala=undefined;
-      
+    }else{
+      console.log(name+" deu erro")
+    }
     });
 
     socket.on('disconnect',() => {
@@ -209,6 +232,7 @@ io.on('connection', function (socket) {
       if(sala!=undefined){
         socket.broadcast.to(sala).emit('desconectado', socket.id);
         salas[sala].quantidade-=1
+
       }
     });
 });

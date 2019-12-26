@@ -1,7 +1,7 @@
 var config={
     width: 988,
     height: 676,
-    scene: [telaInicial, estatisticas, menuPrincipal, jogo, criarPartida, entrarPartida,telaEspera],
+    scene: [telaInicial, estatisticas, menuPrincipal, jogo, criarPartida, entrarPartida,telaEspera, telaEsperaPlayer],
     dom: {
         createContainer: true
     },

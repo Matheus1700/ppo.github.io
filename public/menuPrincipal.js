@@ -25,6 +25,9 @@ class menuPrincipal extends Phaser.Scene{
         var x = this.add.image(490, 338, "fundo2");
         x.setScale(0.75);
 
+        this.socket.on('Indefinido',()=>{
+            alert("Erro logue de novo");
+        });
         let botaoCriar = this.add.image(664.5, 270, "botaoCriar1").setScale(0.55).
         setInteractive().on('pointerdown', () => { 
             this.scene.start("criarPartida",{socket: this.socket},
