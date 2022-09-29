@@ -4,7 +4,7 @@ var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
 
 var mongoose = require('mongoose');  
-mongoose.connect('mongodb+srv://admin:admin@cluster0-vohgh.azure.mongodb.net/test?retryWrites=true&w=majority',{useNewUrlParser: true,useUnifiedTopology: true});
+mongoose.connect('mongodb+srv://PPOUser:PPOUser@cluster0.byu72.mongodb.net/test?retryWrites=true&w=majority',{useNewUrlParser: true,useUnifiedTopology: true});
 const jogador = require('./models/jogador');
 const Jogador = mongoose.model('Jogador');
 
